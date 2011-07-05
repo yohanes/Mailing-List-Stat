@@ -1,5 +1,6 @@
 <html>
 <head><title>{{title}}</title></head>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script> 
 <style type="text/css"> 
 body {
     font: Verdana, Helvetica, sans-serif;
@@ -24,6 +25,8 @@ body {
 </style>
 <body>
 
+<p>{{question}}: </p><form id="dec"><input type="text" id="pass" name="a"><input type="submit" value="decrypt"></form>
+
   <table border="1">
     <tr class="tableheader">
       <td>Rank</td>
@@ -33,10 +36,59 @@ body {
     {% for info in statsdata %}
     <tr class="{% cycle roweven,rowodd %}">
       <td>{{forloop.counter}}</td>
-      <td>{{info.name}}</td>
+      <td><span class="enc">{{info.name}}</span></td>
       <td>{{info.total}}</td>
     </tr>
     {% endfor %}
+
+
+<script language="javascript">
+
+function decrypt(msg, key)
+{
+    var base = "a".charCodeAt(0)
+    var salt1 = msg.charCodeAt(0) - base
+    var salt2 = msg.charCodeAt(1) - base
+    var salt = [salt1, salt2];
+    var result = "";
+    for (var i = 2; i < msg.length; i++) {
+	var k = (i - 2) % key.length;
+	var kk = key.charCodeAt(k);
+	var c = msg.charAt(i);
+	var cc = msg.charCodeAt(i);
+	var upper = (c>='A' && c<='Z');
+	var lower = (c>='a' && c<='z');
+	if (upper || lower) {
+	    var b = base;
+	    if (upper) 
+		b = "A".charCodeAt(0)
+	    cc -= b
+	    var m = (cc - salt[(i-2)%2] - kk);
+	    if (m<0) m += 26*100;
+	    m = m % 26;
+	    result += String.fromCharCode(b + m);
+ 	} else {
+	    result += c;
+	}
+    }
+    return result;
+}
+
+function decryptAll(pass) {
+    var x = $(".enc");
+    for (var i =0; i < x.length; i++) {
+	x[i].innerText = decrypt(x[i].innerText, pass);
+    }
+    return false;
+}
+
+$('#dec').submit(function() {
+    decryptAll($("#pass").val());
+    return false;
+});
+
+</script>
+
 
 </body>
 </html>

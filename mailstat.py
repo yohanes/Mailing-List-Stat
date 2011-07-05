@@ -1,6 +1,6 @@
 import os
 import time
-import re
+import random
 import logging
 import StringIO
 import urlparse
@@ -14,6 +14,36 @@ from google.appengine.api import users
 from google.appengine.api import datastore
 from google.appengine.ext.webapp.mail_handlers import InboundMailHandler 
 from google.appengine.api import mail
+
+def encrypt(msg, key):
+    k = 0
+    salt = [random.randint(0,25), random.randint(0,25)]
+    base = ord('a')
+    salt1 = chr(base  + salt[0])
+    salt2 = chr(base  + salt[1])
+    result = salt1 + salt2
+    i = 0
+    for c in msg:
+        if c.isalpha():
+            if c.islower():
+                b = ord('a')
+            else:
+                b = ord('A')
+            x = ((ord(c) - b) + salt[i%2] + ord(key[k])) % 26
+            result += chr(b + x)
+        else:
+            result += c
+        k = (k + 1) % len(key)
+        i += 1
+    return result
+
+def genqa():
+    a = ({"q": "makanya baca ", "a": "sejarah"}, 
+         {"q": "mari makan di", "a": "kardjan"},
+         {"q": "kolateral", "a": "emas"}
+         )
+
+    return a[random.randint(0, len(a)-1)]
 
 class MailLog(db.Model):
     emailaddr = db.EmailProperty(required=True)
@@ -73,7 +103,14 @@ class StatPage(webapp.RequestHandler):
         q.filter("mailinglist = ", path)
         q.order("-total")
         stats = q.fetch(20)
+
+        qa = genqa()
+
+        for s in stats:
+            s.name = encrypt(s.name, qa['a'])
+
         template_values = { 'title': path,
+                            'question': qa['q'],
                             'statsdata': stats}
         
 
