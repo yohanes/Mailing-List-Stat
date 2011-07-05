@@ -1,0 +1,42 @@
+<html>
+<head><title>{{title}}</title></head>
+<style type="text/css"> 
+body {
+    font: Verdana, Helvetica, sans-serif;
+    color: black;
+    margin: 20;
+    padding: 20;
+                line-height: 1.5em;
+    
+}
+.tableheader { 
+               font-weight: bold;
+ }
+
+.roweven { 
+           background-color: #eeeeee;
+}
+
+.rowodd{  
+           background-color: #ffffff;
+}
+
+</style>
+<body>
+
+  <table border="1">
+    <tr class="tableheader">
+      <td>Rank</td>
+      <td>Name</td>
+      <td>Count</td>
+    </tr>
+    {% for info in statsdata %}
+    <tr class="{% cycle roweven,rowodd %}">
+      <td>{{forloop.counter}}</td>
+      <td>{{info.name}}</td>
+      <td>{{info.total}}</td>
+    </tr>
+    {% endfor %}
+
+</body>
+</html>

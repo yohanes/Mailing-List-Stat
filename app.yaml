@@ -1,0 +1,25 @@
+application: mailing-list-stat
+version: 1
+runtime: python
+api_version: 1
+
+inbound_services:
+- mail
+
+handlers:
+
+- url: /robots.txt
+  static_files: static/robots.txt
+  upload: static/robots.txt
+
+- url: /static
+  static_dir: static
+
+- url: /.*
+  script: mailstat.py
+
+- url: /_ah/mail/itb@.*mailing-list-stat.appspotmail\.com 
+  script: mailstat.py 
+
+- url: /_ah/mail/.+ 
+  script: mailstat.py 
