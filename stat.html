@@ -77,7 +77,12 @@ function decrypt(msg, key)
 function decryptAll(pass) {
     var x = $(".enc");
     for (var i =0; i < x.length; i++) {
-	x[i].innerText = decrypt(x[i].innerText, pass);
+	if (x[i].innerText===undefined) {
+		x[i].textContent = decrypt(x[i].textContent, pass);
+	} else {
+		x[i].innerText = decrypt(x[i].innerText, pass);
+
+	}
     }
     return false;
 }
